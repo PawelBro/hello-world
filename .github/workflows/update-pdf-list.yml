@@ -1,0 +1,74 @@
+name: Update PDF list in README
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  update-pdf-list:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find PDF files and update README
+        run: |
+          # Find all PDF files in the repo (relative paths, sorted)
+          pdf_files=$(find . -name "*.pdf" -not -path "./.git/*" | sort | sed 's|^\./||')
+
+          # Build the markdown list
+          if [ -z "$pdf_files" ]; then
+            list="_Brak plików PDF w repozytorium._"
+          else
+            list=""
+            while IFS= read -r f; do
+              encoded=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1], safe='/'))" "$f")
+              list="${list}- [${f}](${encoded})\n"
+            done <<< "$pdf_files"
+            list=$(printf "%b" "$list")
+          fi
+
+          # Replace the section between the markers in README.md
+          python3 - <<'PYEOF'
+          import re, os
+
+          readme_path = "README.md"
+          with open(readme_path, "r", encoding="utf-8") as fh:
+              content = fh.read()
+
+          import subprocess, urllib.parse
+
+          result = subprocess.run(
+              ["find", ".", "-name", "*.pdf", "-not", "-path", "./.git/*"],
+              capture_output=True, text=True
+          )
+          pdfs = sorted(p.lstrip("./") for p in result.stdout.strip().splitlines() if p)
+
+          if pdfs:
+              lines = "\n".join(
+                  f"- [{p}]({urllib.parse.quote(p, safe='/')})" for p in pdfs
+              )
+          else:
+              lines = "_Brak plików PDF w repozytorium._"
+
+          new_section = f"<!-- PDF_LIST_START -->\n{lines}\n<!-- PDF_LIST_END -->"
+          updated = re.sub(
+              r"<!-- PDF_LIST_START -->.*?<!-- PDF_LIST_END -->",
+              new_section,
+              content,
+              flags=re.DOTALL
+          )
+
+          with open(readme_path, "w", encoding="utf-8") as fh:
+              fh.write(updated)
+          print("README.md updated.")
+          PYEOF
+
+      - name: Commit updated README (if changed)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet README.md || (git add README.md && git commit -m "chore: update PDF list in README [skip ci]")
+          git push
