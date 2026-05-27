@@ -33,7 +33,7 @@
 Bezpiecznik stringu jest opcjonalny (przydatny jako dodatkowa ochrona), ale **nie jest wymagany normami** przy pojedynczym stringu bez równoległego łączenia – prąd zwarciowy jest ograniczony przez sam panel.
 
 **Przy 2 lub więcej stringach połączonych równolegle:**  
-Bezpieczniki stringów są **obowiązkowe**. Gdy jeden string ulegnie zwarciu, pozostałe stringi mogą przez niego „wstecznego" popłynąć prąd wielokrotnie przekraczający Isc pojedynczego stringu. Każdy string musi mieć własny bezpiecznik po stronie „+" (a często też „−").
+Bezpieczniki stringów są **obowiązkowe**. Gdy jeden string ulegnie zwarciu, przez jego kable może wstecznie popłynąć prąd z pozostałych stringów, wielokrotnie przekraczający Isc pojedynczego stringu. Każdy string musi mieć własny bezpiecznik po stronie „+" (a często też „−").
 
 **Zasada ogólna:**  
 > Bezpieczniki stringów = wymagane zawsze, gdy `liczba stringów ≥ 2`.
@@ -154,7 +154,7 @@ Przy napięciu stringu ~135–270 V to mniej niż 2 % → akceptowalne ✅.
 > Voc_cold ≈ 318 V × (1 + 0,0029 × 25) ≈ **342 V**
 
 **⚠️ Ryzyko napięciowe przy 6S:**  
-ECO Solar Boost EVO MPPT-4000 – sprawdź w instrukcji parametr **„Max PV input voltage"**. Jeśli wynosi 350 V: przy 6S w mrozie (<−5 °C) napięcie Voc może zbliżyć się do granicy. Typowe modele EVO MPPT-4000 mają maks. napięcie PV 350 V – **konfiguracja 6S jest technicznie dopuszczalna, ale z minimalnym zapasem**. W wątpliwych przypadkach zaleca się 5S + 1 panel osobno (lub 3S2P).
+Sprawdź w instrukcji EVO MPPT-4000 parametr **„Max PV input voltage"**. Typowe modele mają maks. napięcie PV 350 V. Przy 6S i temperaturze poniżej −10 °C napięcie Voc zbliża się do tej granicy (np. −20 °C daje ~350 V – patrz tabela w sekcji kalkulatora). **Konfiguracja 6S jest technicznie dopuszczalna, ale z minimalnym zapasem napięciowym.** W wątpliwych przypadkach zaleca się 5S + 1 panel osobno (lub 3S2P).
 
 **Czy opisana rozdzielnica pasuje do 6S?**  
 ✅ TAK – jest to konfiguracja 1-stringowa, napięcie 1000 V DC z dużym zapasem, bezpiecznik 15 A odpowiedni.
@@ -231,7 +231,7 @@ gdzie `α_Voc ≈ −0,0029 /°C` (typowo dla paneli mono).
 | 5 | 265 V | 285 V | 292 V |
 | **6** | **318 V** | **342 V** | **350 V** |
 
-> ⚠️ Przy 6 panelach szeregowo i temperaturze −20 °C Voc osiąga 350 V – dokładnie na granicy dla EVO MPPT-4000 (jeśli jego maks. napięcie PV = 350 V). **Zaleca się sprawdzić instrukcję urządzenia.**
+> ⚠️ Przy 6 panelach szeregowo i temperaturze −20 °C Voc osiąga ~350 V – dokładnie na granicy dla EVO MPPT-4000 (jeśli jego maks. napięcie PV = 350 V). Już w okolicach −10 °C Voc wynosi ~342 V, co pozostawia tylko 8 V zapasu. **Zaleca się sprawdzić instrukcję urządzenia** i w razie wątpliwości wybrać konfigurację 5S lub 3S2P.
 
 ### Kalkulator doboru bezpiecznika stringu
 
