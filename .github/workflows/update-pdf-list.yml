@@ -15,30 +15,12 @@ jobs:
 
       - name: Find PDF files and update README
         run: |
-          # Find all PDF files in the repo (relative paths, sorted)
-          pdf_files=$(find . -name "*.pdf" -not -path "./.git/*" | sort | sed 's|^\./||')
-
-          # Build the markdown list
-          if [ -z "$pdf_files" ]; then
-            list="_Brak plików PDF w repozytorium._"
-          else
-            list=""
-            while IFS= read -r f; do
-              encoded=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1], safe='/'))" "$f")
-              list="${list}- [${f}](${encoded})\n"
-            done <<< "$pdf_files"
-            list=$(printf "%b" "$list")
-          fi
-
-          # Replace the section between the markers in README.md
           python3 - <<'PYEOF'
-          import re, os
+          import re, subprocess, urllib.parse
 
           readme_path = "README.md"
           with open(readme_path, "r", encoding="utf-8") as fh:
               content = fh.read()
-
-          import subprocess, urllib.parse
 
           result = subprocess.run(
               ["find", ".", "-name", "*.pdf", "-not", "-path", "./.git/*"],
